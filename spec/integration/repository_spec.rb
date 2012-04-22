@@ -93,6 +93,10 @@ describe Entrepot::Repository do
     end
   end
 
+  describe :save_or_update do
+
+  end
+
   describe :insert_batch do
     it "batch-inserts records"
   end

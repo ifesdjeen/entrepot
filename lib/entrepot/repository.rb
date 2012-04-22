@@ -56,6 +56,17 @@ module Entrepot
         end
       end
 
+      #
+      # Possible params:
+      #  @query - query for the update operation, if record is found not by an ID
+      #  @atomic_modifiers - modifiers, which will take precedence to record values
+      #
+      def update(record, params = {})
+      end
+
+      def update_bulk(records, params = {})
+      end
+
       protected
 
       def klass_name
