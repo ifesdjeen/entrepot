@@ -8,7 +8,7 @@ That particular project and it's satellite is an attempt to bring at least two d
 
 Gain a full control over your databases and objects, again. Don't let tie your arms.
 
-Entrepot is similar to [Curator]:(https://github.com/braintree/curator) in many ways
+Entrepot is similar to [Curator](https://github.com/braintree/curator) in many ways
 
 # Disclaimer
 
