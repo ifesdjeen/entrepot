@@ -41,15 +41,20 @@ describe Entrepot::Repository do
   describe :insert do
     let(:repository) { PersonRepository }
 
-    before(:each) do
-      repository.insert(object)
-    end
-
     context "when given a hash" do
       let(:object) {  {:name => "John Lennon", :address => "Lennonstr 250, Leiningen"}  }
 
       it "inserts document" do
+        repository.insert(object)
         repository.count({ :name => "John Lennon" }).should eql 1
+      end
+
+      it "returns a klass record, that evaluates back to same hash" do
+        repository.insert(object).to_hash.reject do |k,v| k == :id end.should eql object
+      end
+
+      it "returns a repository model record" do
+        repository.insert(object).is_a?(Person).should be_true
       end
     end
 
@@ -57,23 +62,39 @@ describe Entrepot::Repository do
       let(:object) { Person.new({:name => "John Lennon", :address => "Lennonstr 250, Leiningen"}) }
 
       it "inserts document" do
+        repository.insert(object)
         repository.count({ :name => "John Lennon" }).should eql 1
+      end
+
+      it "marks object as persisted" do
+        repository.insert(object)
+        object.persisted?.should be_true
+      end
+
+      it "sets document id" do
+        object.id.should be_nil
+        repository.insert(object)
+        object.id.should_not be_nil
       end
     end
 
     context "when given a model of a different repository" do
-      it "throws an IncorrectModelType exception"
+      it "raises an exception" do
+        lambda {
+          repository.insert(object)
+        }.should raise_exception
+      end
     end
+  end
 
-    # PersonRepository.insert()
+  describe :update do
+    it "updates existing document(s)" do
+
+    end
   end
 
   describe :insert_batch do
     it "batch-inserts records"
-  end
-
-  describe :update do
-    it "updates existing document(s)"
   end
 
 
@@ -117,3 +138,4 @@ end
 # person_repository.insert(person)
 
 # puts person_repository.find_by_id().first
+

@@ -23,6 +23,14 @@ module Entrepot
       extend Entrepot::Model::ClassMethods
     end
 
+    def persisted?
+      @persisted || false
+    end
+
+    def mark_as_persisted
+      @persisted = true
+    end
+
     def recursive_to_hash
       hash = self.to_hash
       hash.each do |key, value|

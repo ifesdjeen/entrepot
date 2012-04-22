@@ -27,7 +27,7 @@ module Entrepot
 
       def data_store
         return @data_store if @data_store
-        @data_store = Entrepot::DataStore.new
+        @data_store = Entrepot.data_store
       end
 
       def collection_name
@@ -46,9 +46,11 @@ module Entrepot
       def insert(record, params = {})
         case record
         when Hash
-          data_store.insert(collection_name, record, params)
+          self.insert(klass.new(record), params)
         when self.klass
-          data_store.insert(collection_name, record.to_hash, params)
+          record.id = data_store.insert(collection_name, record.to_hash, params)
+          record.mark_as_persisted
+          record
         else
           raise Exception
         end
