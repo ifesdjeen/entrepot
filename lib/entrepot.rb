@@ -1,5 +1,6 @@
 require 'virtus'
 
+require 'entrepot/data_store'
 require 'entrepot/repository'
 require 'entrepot/model'
 

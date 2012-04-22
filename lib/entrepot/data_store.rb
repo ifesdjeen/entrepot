@@ -16,14 +16,21 @@ module Entrepot
        self.db[collection_name]
     end
 
+    def count(collection_name, params = {})
+      collection(collection_name).count(params)
+    end
+
+    def insert(collection_name, record, params = {})
+      collection(collection_name).insert(params)
+    end
+
     def find_by_id(collection_name, id)
-      collection.find(BSON::ObjectId(id))
+      collection(collection_name).find(BSON::ObjectId(id))
     end
 
     def drop(collection_name, id)
       collection.drop
     end
-
 
     protected
 

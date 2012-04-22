@@ -1,3 +1,5 @@
+require 'mongo'
+
 class Article
   include Virtus
   include Entrepot::Model

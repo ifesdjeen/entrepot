@@ -3,6 +3,10 @@ require 'integration/spec_helper'
 require 'virtus'
 
 describe Entrepot::Repository do
+  before(:each) do
+    Entrepot.data_store.send(:reset!)
+  end
+
   describe :collection_name do
 
     context "non-namespaced" do
@@ -35,19 +39,45 @@ describe Entrepot::Repository do
   end
 
   describe :insert do
+    let(:repository) { PersonRepository }
 
-    it "inserts documents" do
-      PersonRepository.insert()
+    before(:each) do
+      repository.insert(object)
     end
+
+    context "when given a hash" do
+      let(:object) {  {:name => "John Lennon", :address => "Lennonstr 250, Leiningen"}  }
+
+      it "inserts document" do
+        repository.count({ :name => "John Lennon" }).should eql 1
+      end
+    end
+
+    context "when given a repository model" do
+      let(:object) { Person.new({:name => "John Lennon", :address => "Lennonstr 250, Leiningen"}) }
+
+      it "inserts document" do
+        repository.count({ :name => "John Lennon" }).should eql 1
+      end
+    end
+
+    context "when given a model of a different repository" do
+      it "throws an IncorrectModelType exception"
+    end
+
+    # PersonRepository.insert()
+  end
+
+  describe :insert_batch do
+    it "batch-inserts records"
   end
 
   describe :update do
-    it "updates existing documents"
+    it "updates existing document(s)"
   end
 
 
   describe :find do
-
     it "finds the record" do
 
     end
