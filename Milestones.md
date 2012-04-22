@@ -9,4 +9,6 @@
    - eagerly load children
    - eagerly load children for the array of entities
    - batch-insert children
-
+4. Allow using multiple repository for one record type.
+5. Add support for ElasticSearch
+6. Add support for Riak
