@@ -31,11 +31,13 @@ module Entrepot
       @persisted = true
     end
 
-    def recursive_to_hash
-      hash = self.to_hash
+    def to_hash
+      hash = super
       hash.each do |key, value|
         if value.respond_to?(:to_hash)
           hash[key] = value.to_hash
+        elsif value.nil?
+          hash.delete(key)
         end
       end
     end

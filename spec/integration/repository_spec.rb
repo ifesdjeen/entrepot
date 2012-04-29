@@ -50,7 +50,7 @@ describe Entrepot::Repository do
       end
 
       it "returns a klass record, that evaluates back to same hash" do
-        repository.insert(object).to_hash.reject do |k,v| k == :id end.should eql object
+        repository.insert(object).to_hash.reject do |k,v| k == :_id end.should eql object
       end
 
       it "returns a repository model record" do
@@ -76,6 +76,11 @@ describe Entrepot::Repository do
         repository.insert(object)
         object.id.should_not be_nil
       end
+
+      it "inserts object to the database" do
+        repository.insert(object)
+        repository.find(object.id).to_hash.should eql object.to_hash
+      end
     end
 
     context "when given a model of a different repository" do
@@ -85,10 +90,52 @@ describe Entrepot::Repository do
         }.should raise_exception
       end
     end
+
+    context "when model has embedded records" do
+      it "persists embedded records"
+    end
+
+    context "when model has referenced records" do
+    end
   end
 
   describe :update do
-    it "updates existing document(s)" do
+    let(:repository) { PersonRepository }
+
+    let(:object) { Person.new({:name => "John Lennon", :address => "Lennonstr 250, Leiningen"}) }
+
+    context "when given a hash" do
+      context "when the record is unidentifiable (no _id is set)" do
+        it "throws an exception" do
+
+        end
+      end
+
+      context "when the record is identifiable (_id is set)" do
+        it "updates the record"
+      end
+
+      context "when the record is identifiable (:query attribute passed)" do
+        it "updates the record"
+      end
+
+      context "when atomic modifiers are given" do
+        it "updates the record in the database"
+
+        it "updates the record" do
+          repository.insert(object)
+          repository.update(object, :atomic_modifiers => { "$set" => { :address => "Changed address" } })
+          object.address.should eql "Changed address"
+        end
+      end
+
+    end
+
+    context "when given a record" do
+      context "when the record is unidentifiable (no id set)" do
+        it "throws an exception"
+      end
+
 
     end
   end

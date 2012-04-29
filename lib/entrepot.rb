@@ -1,9 +1,12 @@
 require 'virtus'
 
 require 'entrepot/data_store'
-require 'entrepot/mongo/data_store'
 require 'entrepot/repository'
 require 'entrepot/model'
+
+require 'mongo'
+require 'entrepot/mongo/data_store'
+require 'entrepot/mongo/model'
 
 module Entrepot
 

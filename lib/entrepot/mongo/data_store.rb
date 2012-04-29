@@ -20,11 +20,19 @@ module Entrepot
       end
 
       def insert(collection_name, record, params = {})
-        collection(collection_name).insert(params)
+        collection(collection_name).insert(record)
+      end
+
+      def update(collection_name, query, record_or_modifiers, params = {})
+        collection(collection_name).update(query, record_or_modifiers)
+      end
+
+      def find_one(collection_name, query)
+        collection(collection_name).find_one(query)
       end
 
       def find_by_id(collection_name, id)
-        collection(collection_name).find(BSON::ObjectId(id))
+        collection(collection_name).find_one(id)
       end
 
       def drop(collection_name, id)

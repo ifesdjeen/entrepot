@@ -61,7 +61,36 @@ module Entrepot
       #  @query - query for the update operation, if record is found not by an ID
       #  @atomic_modifiers - modifiers, which will take precedence to record values
       #
-      def update(record, params = {})
+      def update(record, *params)
+        params = params[0]
+        case record
+        when self.klass
+          raise Exception if record.id.nil? && params[:query].nil?
+          query = params[:query] || {:_id => record.id}
+
+          if params[:atomic_modifiers]
+            data_store.update(collection_name, query, params[:atomic_modifiers], params)
+            record.attributes = self.find(record.id)
+          else
+            data_store.update(collection_name, query, record.to_hash, params)
+            record.attributes = self.find(record.id)
+          end
+
+          record
+        else
+          raise Exception
+        end
+      end
+
+      def find(id_or_query)
+        case id_or_query
+        when Hash
+          data_store.find(collection_name, id_or_query)
+        when BSON::ObjectId
+          klass.new(data_store.find_by_id(collection_name, id_or_query))
+        else
+          raise Exception
+        end
       end
 
       def update_bulk(records, params = {})

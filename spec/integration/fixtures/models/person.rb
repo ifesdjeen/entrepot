@@ -1,10 +1,7 @@
-require 'mongo'
-
 class Person
   include Virtus
-  include Entrepot::Model
+  include Entrepot::Mongo::Model
 
-  attribute :id,       ObjectId
   attribute :name,     String
-  attribute :address, Address
+  attribute :address,  Address
 end
