@@ -4,9 +4,11 @@ Back in Java days, everything was easy: you define a Plain Old Java Object (POJO
 Filling up with data is strictly a Repository problem, whilst validation and internal conversions are more related to the object itself. Trying to tie
 absolutely different data stores into a single interface is a tedious task. Untangle your thoughts and use the idioms that come from your db's world.
 
-That particular project and it's satellite is an attempt to bring at least two data stores together using Veritas.
+That particular project and it's satellite is an attempt to bring at least two data stores together using Virtus.
 
-Gain a full control over your databases and objects, again. Don't let tie your arms.
+Gain a full control over your databases and objects, again. Don't let them tie your arms.
+
+Entrepot woks with hashes, but that was made mostly for flexibility and ease of ad-hoc usage.
 
 Entrepot is similar to [Curator](https://github.com/braintree/curator) in many ways
 
