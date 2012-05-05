@@ -6,7 +6,8 @@ module Entrepot
       include Entrepot::Model
 
       included do
-        attribute :_id, ::BSON::ObjectId
+        attribute :_id,   ::BSON::ObjectId
+        attribute :_type, ::String
       end
 
       def id
@@ -16,8 +17,6 @@ module Entrepot
       def id=(value)
         self._id = value
       end
-
-
     end
   end
 end

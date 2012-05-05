@@ -6,9 +6,10 @@ describe Entrepot::Repository do
   end
 
   describe :find do
-    let(:id)      { BSON::ObjectId.new }
-    let(:address) { { :street => "Dachstr 15", :city => "Dresden", :country => "Deutschland"     } }
-    let(:object)  { { :_id => id, :name => "John Lennon", :address => address} }
+    let(:id)         { BSON::ObjectId.new }
+    let(:address)    { { :street => "Dachstr 15", :city => "Dresden", :country => "Deutschland"     } }
+    let(:attributes) { { :_id => id, :name => "John Lennon", :address => address} }
+    let(:object)     { Person.new(attributes) }
 
     let(:repository) { PersonRepository }
 
@@ -47,7 +48,15 @@ describe Entrepot::Repository do
       end
     end
 
-    describe "when entry has referenced associations" do
+    context "when given record is of a type, derived from the repository class" do
+      let(:object)     { Manager.new(attributes) }
+
+      it "instantiates correct record type" do
+        repository.find(id).is_a?(Manager).should be_true
+      end
+    end
+
+    context "when entry has referenced associations" do
       describe "when association is loaded eagerly" do
         it "loads the assoc."
       end
@@ -55,6 +64,7 @@ describe Entrepot::Repository do
         it "fills up an assoc. with an lazy-evaled method"
       end
     end
+
   end
 
 end

@@ -5,3 +5,6 @@ class Person
   attribute :name,     String
   attribute :address,  Address
 end
+
+class Manager < Person
+end

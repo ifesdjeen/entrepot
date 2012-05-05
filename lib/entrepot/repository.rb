@@ -54,6 +54,10 @@ module Entrepot
         when Hash
           self.insert(record_class.new(record), params)
         when self.record_class
+          if record.class < self.record_class
+            record._type = record.class.to_s
+          end
+
           record.id = data_store.insert(collection_name, record.to_hash, params)
           record.mark_as_persisted
           record
@@ -138,6 +142,8 @@ module Entrepot
           nil
         when found_record.is_a?(::Mongo::Cursor)
           found_record.collect do |i| instantiate_or_raise_not_found_exception(i) end
+        when !found_record["_type"].nil?
+          found_record["_type"].constantize.new(found_record)
         else
           record_class.new(found_record)
         end

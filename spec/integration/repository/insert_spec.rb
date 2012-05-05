@@ -62,6 +62,28 @@ describe Entrepot::Repository do
       end
     end
 
+    context "when given a model of a different repository, derived from the model" do
+      module Test
+        class DerivedFromPerson < Person
+        end
+      end
+
+      let(:object) { Test::DerivedFromPerson.new(attributes) }
+
+      it "doesn't raise an exception" do
+        lambda {
+          repository.insert(object)
+        }.should_not raise_exception
+      end
+
+      it "sets _type attribute" do
+        repository.insert(object)
+        repository.find(object.id)._type.should eql "Test::DerivedFromPerson"
+        object._type.should eql "Test::DerivedFromPerson"
+      end
+    end
+
+
     context "when model has embedded records" do
       it "persists embedded records" do
         repository.insert(object)
