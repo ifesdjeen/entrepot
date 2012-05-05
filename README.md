@@ -126,6 +126,20 @@ Or by id:
 PersonRepository.remove({:name => /^John/})
 ```
 
+## STI
+
+We also support STI, pretty much the same way you are used to use it in ActiveRecord-like ORMs.
+
+```ruby
+class Manager < Person
+end
+
+manager = Manager.new({:name => "Mr. Manager", :address => { :street => "Managerstr 11", :city => "Dresden", :country => "Deutschland" } })
+
+PersonRepository.insert(manager)
+manager._type # => "Manager"
+PersonRepository.find(manager.id).class # => Manager
+```
 
 # Disclaimer
 
