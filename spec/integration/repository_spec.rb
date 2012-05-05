@@ -94,6 +94,7 @@ describe Entrepot::Repository do
     end
 
     context "when model has referenced records" do
+      it "persist referenced records"
     end
   end
 
@@ -110,11 +111,21 @@ describe Entrepot::Repository do
       end
 
       context "when the record is identifiable (_id is set)" do
-        it "updates the record"
+        it "updates the record" do
+          repository.insert(object)
+          object.name = "New Groove"
+          repository.update(object)
+          object.name.should eql "New Groove"
+        end
       end
 
       context "when the record is identifiable (:query attribute passed)" do
-        it "updates the record"
+        it "updates the record" do
+          repository.insert(object)
+          object.name = "New Groove"
+          repository.update(object, :query => { :name => /^John/ })
+          object.name.should eql "New Groove"
+        end
       end
 
       context "when atomic modifiers are given" do
@@ -122,8 +133,8 @@ describe Entrepot::Repository do
 
         it "updates the record" do
           repository.insert(object)
-          repository.update(object, :atomic_modifiers => { "$set" => { :address => "Changed address" } })
-          object.address.should eql "Changed address"
+          repository.update(object, :atomic_modifiers => { "$set" => { :name => "New Groove" } })
+          object.name.should eql "New Groove"
         end
       end
 
@@ -138,21 +149,13 @@ describe Entrepot::Repository do
     end
   end
 
-  describe :save_or_update do
-
-  end
-
-  describe :insert_batch do
-    it "batch-inserts records"
-  end
-
-
   describe :find do
     let(:repository) { PersonRepository }
 
     context "by record ID" do
       let(:id)     { BSON::ObjectId.new }
-      let(:object) { { :_id => id, :name => "John Lennon", :address => "Lennonstr 250, Leiningen"} }
+      let(:address) { { :street => "Dachstr 15", :city => "Dresden", :country => "Deutschland"     } }
+      let(:object) { { :_id => id, :name => "John Lennon", :address => address} }
 
       it "finds the record" do
         repository.insert(object)
@@ -182,7 +185,17 @@ describe Entrepot::Repository do
       end
     end
 
-    it "fills in embedded records"
+    context "when record has embedded records" do
+      let(:id)     { BSON::ObjectId.new }
+      let(:address) { { :street => "Dachstr 15", :city => "Dresden", :country => "Deutschland"     } }
+      let(:object)  { { :_id => id, :name => "John Lennon", :address => address } }
+
+      it "fills in embedded records" do
+        repository.insert(object)
+        repository.find(id).address.is_a?(Address).should be_true
+        repository.find(id).address.to_hash.should eql address
+      end
+    end
 
     describe "when entry has referenced associations" do
       describe "when association is loaded eagerly" do
@@ -193,6 +206,15 @@ describe Entrepot::Repository do
       end
     end
   end
+
+  describe :save_or_update do
+
+  end
+
+  describe :insert_batch do
+    it "batch-inserts records"
+  end
+
 
   describe :map_reduce do
     it "should run map-reduce query on the collection"

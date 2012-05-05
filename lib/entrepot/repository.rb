@@ -9,20 +9,22 @@ module Entrepot
     module ClassMethods
 
       #
-      # Represents belongs_to relationship
+      # Relationshops
       #
-      def belongs_to(relation, args)
+
+      def belongs_to(relation, *args)
         @_belongs_to_fields = {}
         @_belongs_to_fields[relation] = args
       end
 
-      #
-      # Represents has_many relationship
-      #
-
-      def has_many(relation, args)
+      def has_many(relation, *args)
         @_has_many_fields = {}
         @_has_many_fields[relation] = args
+      end
+
+      def has_one(relation, *args)
+        @_has_one_fields = {}
+        @_has_one_fields[relation] = args
       end
 
       def data_store
@@ -43,6 +45,10 @@ module Entrepot
         data_store.count(collection_name, params)
       end
 
+      #
+      # Repository Operations
+      #
+
       def insert(record, params = {})
         case record
         when Hash
@@ -62,7 +68,7 @@ module Entrepot
       #  @atomic_modifiers - modifiers, which will take precedence to record values
       #
       def update(record, *params)
-        params = params[0]
+        params = params[0] || {}
         case record
         when self.klass
           raise Exception if record.id.nil? && params[:query].nil?
@@ -95,6 +101,11 @@ module Entrepot
         end
       end
 
+      def update_bulk(records, params = {})
+      end
+
+      protected
+
       def raise_not_found_exception?
         true
       end
@@ -111,11 +122,6 @@ module Entrepot
           klass.new(found_record)
         end
       end
-
-      def update_bulk(records, params = {})
-      end
-
-      protected
 
       def klass_name
         name.to_s.gsub("Repository", "")
@@ -134,20 +140,17 @@ module Entrepot
       end
     end
 
-
-    def find_one(attributes = {})
-      collection.find_one(attributes)
-    end
-
-
     def own_fields(record)
       record.recursive_to_hash.select do |key, value| !self.class.has_many_fields.keys.include?(key) end
+    end
+
+    def foreign_fields
+      @_belongs_to_fields + @_has_many_fields
     end
 
     included do
       extend Entrepot::Repository::ClassMethods
     end
-
 
   end
 end
