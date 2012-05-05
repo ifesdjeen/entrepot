@@ -12,6 +12,97 @@ Entrepot woks with hashes, but that was made mostly for flexibility and ease of 
 
 Entrepot is similar to [Curator](https://github.com/braintree/curator) in many ways
 
+# What Entrepôt can do so far
+
+Let's make a very basic setup first. Person, that has an address as an embedded Address record and referenced Article records.
+
+```ruby
+class Address
+  include Virtus
+  include Entrepot::Model
+
+  attribute :street,  String
+  attribute :city,    String
+  attribute :country, String
+end
+
+class Person
+  include Virtus
+  include Entrepot::Mongo::Model
+
+  attribute :name,     String
+  attribute :address,  Address
+end
+
+class PersonRepository
+  include Entrepot::Repository
+
+  has_many :articles, :repository => :ArticleRepository
+end
+```
+## Inserting documents
+
+You can insert a hash:
+
+```ruby
+PersonRepository.insert({:name => "John Lennon", :address => { :street => "Dachstr 15", :city => "Dresden", :country => "Deutschland" } })
+```
+
+Or an object, that responds to #to_hash:
+
+```ruby
+person = Person.new({:name => "John Lennon", :address => { :street => "Dachstr 15", :city => "Dresden", :country => "Deutschland" } })
+PersonRepository.insert(person)
+person.id # will return you an ObjectId of newly inserted record
+```
+
+## Finding documents
+
+Again, little set-up:
+
+```ruby
+person = Person.new({:name => "John Lennon", :address => { :street => "Dachstr 15", :city => "Dresden", :country => "Deutschland" } })
+PersonRepository.insert(person)
+```
+
+Find by ID:
+
+```ruby
+PersonRepository.find(person.id)
+# returns #<Person:0x007face469a7b0 @name="John Lennon" @address= ...>
+```
+
+Or by query:
+
+```ruby
+PersonRepository.find({:name => /^John/})
+# returns #<Person:0x007face469a7b0 @name="John Lennon" @address= ...>
+```
+
+## Updating documents
+
+By replacing an existing record in Database:
+
+```ruby
+person.name = "New Groove"
+PersonRepository.update(object)
+# returns #<Person:0x007face469a7b0 @name="New Groove" @address= ...>
+```
+
+Or using Atomic Modifiers:
+
+```ruby
+PersonRepository(person, :atomic_modifiers => { "$set" => { :name => "New Groove" } })
+# returns #<Person:0x007face469a7b0 @name="New Groove" @address= ...>
+```
+
+Additionally, you can specify which record you want to replace or update:
+
+```ruby
+PersonRepository(person, :query => { :name => /^John/ })
+# returns #<Person:0x007face469a7b0 @name="New Groove" @address= ...>
+```
+
 # Disclaimer
 
 You may feel or may not feel the same problem. If you have a form with an ability to manipulate nested embedded fields without headache, validate in a way that
