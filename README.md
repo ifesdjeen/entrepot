@@ -1,4 +1,5 @@
 # Entrepôt, for people who treat their data with care.
+[![Build Status](https://secure.travis-ci.org/ifesdjeen/entrepot.png?branch=master)](http://travis-ci.org/ifesdjeen/entrepot)
 
 Back in Java days, everything was easy: you define a Plain Old Java Object (POJO), fill it up with some data, afterwards you let others fill it up with data.
 Filling up with data is strictly a Repository problem, whilst validation and internal conversions are more related to the object itself. Trying to tie
