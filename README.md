@@ -120,8 +120,6 @@ PersonRepository.remove(person.id)
 
 Or by any query:
 
-Or by id:
-
 ```ruby
 PersonRepository.remove({:name => /^John/})
 ```
