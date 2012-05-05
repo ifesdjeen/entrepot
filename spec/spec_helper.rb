@@ -9,7 +9,7 @@ require 'entrepot'
 Bundler.setup(:default, :test)
 
 support = File.join(File.dirname(__FILE__), "support")
-Dir[File.join(support, "support/**/*.rb")].sort.each { |f| require(f) }
+Dir[File.join(support, "**/*.rb")].sort.each { |f| require(f) }
 
 RSpec.configure do |config|
   config.mock_with :rspec

@@ -27,6 +27,10 @@ module Entrepot
         collection(collection_name).update(query, record_or_modifiers)
       end
 
+      def find(collection_name, query)
+        collection(collection_name).find(query)
+      end
+
       def find_one(collection_name, query)
         collection(collection_name).find_one(query)
       end

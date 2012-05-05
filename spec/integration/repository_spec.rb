@@ -1,7 +1,5 @@
 require 'integration/spec_helper'
 
-require 'virtus'
-
 describe Entrepot::Repository do
   before(:each) do
     Entrepot.data_store.send(:reset!)
@@ -50,7 +48,7 @@ describe Entrepot::Repository do
       end
 
       it "returns a klass record, that evaluates back to same hash" do
-        repository.insert(object).to_hash.reject do |k,v| k == :_id end.should eql object
+        repository.insert(object).should be_instantiated_from object
       end
 
       it "returns a repository model record" do
@@ -106,7 +104,7 @@ describe Entrepot::Repository do
 
     context "when given a hash" do
       context "when the record is unidentifiable (no _id is set)" do
-        it "throws an exception" do
+        it "raises an exception" do
 
         end
       end
@@ -133,7 +131,7 @@ describe Entrepot::Repository do
 
     context "when given a record" do
       context "when the record is unidentifiable (no id set)" do
-        it "throws an exception"
+        it "raises an exception"
       end
 
 
@@ -150,17 +148,41 @@ describe Entrepot::Repository do
 
 
   describe :find do
-    it "finds the record" do
+    let(:repository) { PersonRepository }
 
+    context "by record ID" do
+      let(:id)     { BSON::ObjectId.new }
+      let(:object) { { :_id => id, :name => "John Lennon", :address => "Lennonstr 250, Leiningen"} }
+
+      it "finds the record" do
+        repository.insert(object)
+        repository.find(id).to_hash.should eql object
+      end
+
+      it "finds the record when ID is string" do
+        repository.insert(object)
+        repository.find(id.to_s).to_hash.should eql object
+      end
     end
 
-    it "instantiates the correct record type" do
+    context "by query" do
+      let(:object) { { :name => "John Lennon", :address => "Lennonstr 250, Leiningen"} }
 
+      it "finds the record" do
+        repository.insert(object)
+        repository.find({:name => /^John/}).first.should be_instantiated_from object
+      end
     end
 
-    it "fills in embedded records" do
-
+    context "when record does not exist" do
+      it "raises not found exception" do
+        lambda {
+          repository.find(BSON::ObjectId.new).to_hash
+        }.should raise_exception
+      end
     end
+
+    it "fills in embedded records"
 
     describe "when entry has referenced associations" do
       describe "when association is loaded eagerly" do
@@ -182,11 +204,3 @@ describe Entrepot::Repository do
 
 
 end
-
-# person = Person.new(:name => "name", :gender => "gender", :articles => [ { :title => "title 1", :text => "text 1" }, { :title => "title 2", :text => "text 2" } ], :address => { :street => "street", :city => "city", :country => "country" } )
-
-# person_repository = PersonRepository.new
-# person_repository.insert(person)
-
-# puts person_repository.find_by_id().first
-

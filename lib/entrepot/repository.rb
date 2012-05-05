@@ -85,11 +85,30 @@ module Entrepot
       def find(id_or_query)
         case id_or_query
         when Hash
-          data_store.find(collection_name, id_or_query)
+          instantiate_or_raise_not_found_exception(data_store.find(collection_name, id_or_query))
         when BSON::ObjectId
-          klass.new(data_store.find_by_id(collection_name, id_or_query))
+          instantiate_or_raise_not_found_exception(data_store.find_by_id(collection_name, id_or_query))
+        when String
+          instantiate_or_raise_not_found_exception(data_store.find_by_id(collection_name, BSON::ObjectId(id_or_query)))
         else
           raise Exception
+        end
+      end
+
+      def raise_not_found_exception?
+        true
+      end
+
+      def instantiate_or_raise_not_found_exception(found_record)
+        case
+        when found_record.nil? && raise_not_found_exception?
+          raise Exception
+        when found_record.nil? && !raise_not_found_exception?
+          nil
+        when found_record.is_a?(::Mongo::Cursor)
+          found_record.collect do |i| instantiate_or_raise_not_found_exception(i) end
+        else
+          klass.new(found_record)
         end
       end
 
