@@ -63,7 +63,10 @@ describe Entrepot::Repository do
     end
 
     context "when model has embedded records" do
-      it "persists embedded records"
+      it "persists embedded records" do
+        repository.insert(object)
+        repository.find(object.id).address.should be_instance_of Address
+      end
     end
 
     context "when model has referenced records" do

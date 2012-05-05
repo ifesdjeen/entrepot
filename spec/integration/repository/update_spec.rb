@@ -10,50 +10,47 @@ describe Entrepot::Repository do
 
     let(:object) { Person.new({:name => "John Lennon", :address => "Lennonstr 250, Leiningen"}) }
 
-    context "when given a hash" do
-      context "when the record is unidentifiable (no _id is set)" do
-        it "raises an exception" do
+    before(:each) do
+      repository.insert(object)
+    end
 
-        end
-      end
-
-      context "when the record is identifiable (_id is set)" do
-        it "updates the record" do
-          repository.insert(object)
-          object.name = "New Groove"
+    context "when the record is unidentifiable (no id is set)" do
+      it "raises an exception" do
+        object.id = nil
+        lambda {
           repository.update(object)
-          object.name.should eql "New Groove"
-        end
+        }.should raise_exception
       end
-
-      context "when the record is identifiable (:query attribute passed)" do
-        it "updates the record" do
-          repository.insert(object)
-          object.name = "New Groove"
-          repository.update(object, :query => { :name => /^John/ })
-          object.name.should eql "New Groove"
-        end
-      end
-
-      context "when atomic modifiers are given" do
-        it "updates the record in the database"
-
-        it "updates the record" do
-          repository.insert(object)
-          repository.update(object, :atomic_modifiers => { "$set" => { :name => "New Groove" } })
-          object.name.should eql "New Groove"
-        end
-      end
-
     end
 
-    context "when given a record" do
-      context "when the record is unidentifiable (no id set)" do
-        it "raises an exception"
+    context "when the record is identifiable (id is set)" do
+      it "updates the record" do
+        object.name = "New Groove"
+        repository.update(object)
+        object.name.should eql "New Groove"
+      end
+    end
+
+    context "when the record is identifiable (:query attribute passed)" do
+      it "updates the record" do
+        object.name = "New Groove"
+        repository.update(object, :query => { :name => /^John/ })
+        object.name.should eql "New Groove"
+      end
+    end
+
+    context "when atomic modifiers are given" do
+      it "updates the record in the database" do
+        repository.update(object, :atomic_modifiers => { "$set" => { :name => "New Groove" } })
+        repository.find(object.id).name.should eql "New Groove"
       end
 
-
+      it "updates the record" do
+        repository.update(object, :atomic_modifiers => { "$set" => { :name => "New Groove" } })
+        object.name.should eql "New Groove"
+      end
     end
+
   end
 
 end

@@ -15,15 +15,15 @@ module Entrepot
          self.db[collection_name]
       end
 
-      def count(collection_name, params = {})
-        collection(collection_name).count(params)
+      def count(collection_name, *params)
+        collection(collection_name).count(params.first)
       end
 
-      def insert(collection_name, record, params = {})
+      def insert(collection_name, record, *params)
         collection(collection_name).insert(record)
       end
 
-      def update(collection_name, query, record_or_modifiers, params = {})
+      def update(collection_name, query, record_or_modifiers, *params)
         collection(collection_name).update(query, record_or_modifiers)
       end
 
@@ -37,6 +37,10 @@ module Entrepot
 
       def find_by_id(collection_name, id)
         collection(collection_name).find_one(id)
+      end
+
+      def remove(collection_name, query, *params)
+        collection(collection_name).remove(query)
       end
 
       def drop(collection_name, id)

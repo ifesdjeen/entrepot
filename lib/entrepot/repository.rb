@@ -62,6 +62,27 @@ module Entrepot
         end
       end
 
+      def extract_query(record, params)
+        params[:query] || {:_id => record.id}
+      end
+
+      def remove(record_id_or_query, params = {})
+        params = params[0] || {}
+
+        case record_id_or_query
+        when BSON::ObjectId
+          remove({:_id => record_id_or_query}, params)
+        when String
+          remove(BSON::ObjectId(record_id_or_query), params)
+        when self.record_class
+          remove(record_id_or_query.id, params)
+        when Hash
+          data_store.remove(collection_name, record_id_or_query, params)
+        else
+          raise Exception
+        end
+      end
+
       #
       # Possible params:
       #  @query - query for the update operation, if record is found not by an ID
@@ -69,10 +90,9 @@ module Entrepot
       #
       def update(record, *params)
         params = params[0] || {}
-        case record
-        when self.record_class
+        if record.is_a?(self.record_class)
           raise Exception if record.id.nil? && params[:query].nil?
-          query = params[:query] || {:_id => record.id}
+          query = extract_query(record, params)
 
           if params[:atomic_modifiers]
             data_store.update(collection_name, query, params[:atomic_modifiers], params)
