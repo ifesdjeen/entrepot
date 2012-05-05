@@ -34,11 +34,11 @@ module Entrepot
 
       def collection_name
         @collection_name if @collection_name
-        @collection_name = ActiveSupport::Inflector.tableize(klass_name).gsub("/", "_")
+        @collection_name = ActiveSupport::Inflector.tableize(record_class_name).gsub("/", "_")
       end
 
-      def klass
-        klass_name.constantize
+      def record_class
+        record_class_name.constantize
       end
 
       def count(params = {})
@@ -52,8 +52,8 @@ module Entrepot
       def insert(record, params = {})
         case record
         when Hash
-          self.insert(klass.new(record), params)
-        when self.klass
+          self.insert(record_class.new(record), params)
+        when self.record_class
           record.id = data_store.insert(collection_name, record.to_hash, params)
           record.mark_as_persisted
           record
@@ -70,7 +70,7 @@ module Entrepot
       def update(record, *params)
         params = params[0] || {}
         case record
-        when self.klass
+        when self.record_class
           raise Exception if record.id.nil? && params[:query].nil?
           query = params[:query] || {:_id => record.id}
 
@@ -119,16 +119,16 @@ module Entrepot
         when found_record.is_a?(::Mongo::Cursor)
           found_record.collect do |i| instantiate_or_raise_not_found_exception(i) end
         else
-          klass.new(found_record)
+          record_class.new(found_record)
         end
       end
 
-      def klass_name
+      def record_class_name
         name.to_s.gsub("Repository", "")
       end
 
-      def _instantiate_klass(params={})
-        klass.new(params)
+      def _instantiate_record_class(params={})
+        record_class.new(params)
       end
 
       def belongs_to_fields
