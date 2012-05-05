@@ -93,16 +93,39 @@ PersonRepository.update(object)
 Or using Atomic Modifiers:
 
 ```ruby
-PersonRepository(person, :atomic_modifiers => { "$set" => { :name => "New Groove" } })
+PersonRepository.update(person, :atomic_modifiers => { "$set" => { :name => "New Groove" } })
 # returns #<Person:0x007face469a7b0 @name="New Groove" @address= ...>
 ```
 
 Additionally, you can specify which record you want to replace or update:
 
 ```ruby
-PersonRepository(person, :query => { :name => /^John/ })
+PersonRepository.update(person, :query => { :name => /^John/ })
 # returns #<Person:0x007face469a7b0 @name="New Groove" @address= ...>
 ```
+
+## Removing documents
+
+You can remove by the record:
+
+```ruby
+PersonRepository.remove(person)
+```
+
+Or by id:
+
+```ruby
+PersonRepository.remove(person.id)
+```
+
+Or by any query:
+
+Or by id:
+
+```ruby
+PersonRepository.remove({:name => /^John/})
+```
+
 
 # Disclaimer
 
