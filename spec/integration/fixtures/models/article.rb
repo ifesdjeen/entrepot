@@ -1,8 +1,5 @@
-require 'mongo'
-
 class Article
-  include Virtus
-  include Entrepot::Model
+  include Entrepot::Mongo::Model
 
   attribute :title,  String
   attribute :text,   String

@@ -44,7 +44,7 @@ describe Entrepot::Repository do
     context "when record has embedded records" do
       it "fills in embedded records" do
         repository.find(id).address.is_a?(Address).should be_true
-        repository.find(id).address.to_hash.should eql address
+        repository.find(id).address.should be_instantiated_from address
       end
     end
 

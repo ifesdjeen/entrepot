@@ -1,6 +1,5 @@
 class Address
-  include Virtus
-  include Entrepot::Model
+  include Entrepot::Mongo::Model
 
   attribute :street,  String
   attribute :city,    String

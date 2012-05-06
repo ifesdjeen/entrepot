@@ -1,10 +1,17 @@
 RSpec::Matchers.define :be_instantiated_from do |expected|
   def reject_id(obj)
-    obj.to_hash.reject.reject do |k,v| k == :_id end
+    obj.to_hash.reject!.reject do |k,v|
+      if v.is_a?(Hash)
+        reject_id(v)
+      else
+        k == :_id || v.nil?
+      end
+    end
   end
 
   match do |actual|
-    reject_id(actual).should eql reject_id(expected)
+    a = actual.dup
+    reject_id(a).should eql reject_id(expected)
   end
 
   failure_message_for_should do |actual|

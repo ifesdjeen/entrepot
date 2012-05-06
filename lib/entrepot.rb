@@ -15,4 +15,10 @@ module Entrepot
     return @data_store if @data_store
     @data_store = Mongo::DataStore.new
   end
+
+  def self.finalize!
+    Thread.current['__entrepot'].each do |repository|
+      repository.send(:finalize!)
+    end
+  end
 end

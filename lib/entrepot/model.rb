@@ -1,5 +1,3 @@
-require 'active_support/concern'
-
 module Entrepot
 
   #
@@ -10,17 +8,11 @@ module Entrepot
   # or I open up a class and give you a waring which you shouldn't be scared of.
   #
   module Model
-    extend ActiveSupport::Concern
-
     module ClassMethods
       def const_missing(name)
         puts "Warning: #{name} was not defined, assuming further definition. Keep calm tho."
-        name = Class.new
+        const_set(name, Class.new)
       end
-    end
-
-    included do
-      extend Entrepot::Model::ClassMethods
     end
 
     def persisted?

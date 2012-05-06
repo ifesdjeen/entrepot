@@ -1,14 +1,17 @@
 module Entrepot
   module Mongo
     module Model
-      extend ActiveSupport::Concern
 
-      include Entrepot::Model
+      def self.included(base)
+        base.send(:include, ::Virtus)
+        base.extend(::Entrepot::Model::ClassMethods)
+        base.send(:include, ::Entrepot::Model)
 
-      included do
-        attribute :_id,   ::BSON::ObjectId
-        attribute :_type, ::String
+        base.attribute :_id,   ::BSON::ObjectId
+        base.attribute :_type, ::String
       end
+
+      private_class_method :included
 
       def id
         self._id

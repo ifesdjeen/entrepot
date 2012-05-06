@@ -5,8 +5,20 @@ module Entrepot
   module Repository
     extend ActiveSupport::Concern
 
-
     module ClassMethods
+
+      def parent_name
+        name =~ /::[^:]+\Z/ ? $`.freeze : nil
+      end
+
+      def const_missing(name)
+        puts "Warning: #{name} was not defined, assuming further definition. Keep calm tho."
+        if parent_name.nil?
+          Object.const_set(name, Class.new)
+        else
+          const_get(parent_name).const_set(name, Class.new)
+        end
+      end
 
       #
       # Relationshops
@@ -35,6 +47,11 @@ module Entrepot
       def collection_name
         @collection_name if @collection_name
         @collection_name = ActiveSupport::Inflector.tableize(record_class_name).gsub("/", "_")
+      end
+
+      def record_class=(value)
+        @_record_class_name = value.to_s
+        value
       end
 
       def record_class
@@ -128,7 +145,14 @@ module Entrepot
       def update_bulk(records, params = {})
       end
 
-      protected
+      private
+
+      def finalize!
+        (@_belongs_to_fields || []).each do |relation, args|
+          record_class.attribute(relation.to_sym, args.first[:repository].record_class)
+          record_class.attribute("#{relation.to_s}_id".to_sym, BSON::ObjectId)
+        end
+      end
 
       def raise_not_found_exception?
         true
@@ -150,7 +174,7 @@ module Entrepot
       end
 
       def record_class_name
-        name.to_s.gsub("Repository", "")
+        @_record_class_name ||= name.to_s.gsub("Repository", "")
       end
 
       def _instantiate_record_class(params={})
@@ -176,6 +200,8 @@ module Entrepot
 
     included do
       extend Entrepot::Repository::ClassMethods
+      Thread.current['__entrepot'] ||= []
+      Thread.current['__entrepot']<< self
     end
 
   end
